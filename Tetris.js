@@ -4,14 +4,16 @@
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
 const box= 25;
+const directD="DOWN";
 let direct;
-let piece=[{x:250,y:0}];
+let piece=[{x:10*box,y:0*box}];
 
 document.addEventListener("keydown", move);
 setInterval(draw,100);
+
 function move (event) {
 if (event.keyCode===40) {
-    direct="DOWN"
+    directD="DOWN"
     draw();
 }
 if (event.keyCode===39) {
@@ -29,20 +31,25 @@ if (event.keyCode===37) {
 }
 
 }
+function clear (c) {
+    c.clearRect(0,0,600,600);
+ }
 function draw() {
-
+    clear(ctx);
     ctx.beginPath();
     ctx.rect(piece[0].x,piece[0].y,box,box);
     ctx.stroke();
-
+    
     pieceX=piece[0].x;
     pieceY=piece[0].y;
     piece.pop();
-    if (direct="DOWN") pieceY += box;
-    if (direct="LEFT") pieceX -= box;
-    if (direct="RIGHT") pieceX += box;
+    if (directD === "DOWN") pieceY += box;
+    if (direct === "LEFT") pieceX -= box;
+    if (direct === "RIGHT") pieceX += box;
 
-    piece.unshift({x:pieceX,y:pieceY});
+let newPiece={x:pieceX, y:pieceY};
+
+    piece.unshift(newPiece);
 
 
 }
