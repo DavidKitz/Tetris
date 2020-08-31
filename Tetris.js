@@ -13,8 +13,8 @@ let count=0;
 
 
 document.addEventListener("keydown", move);
-setInterval(draw,400);
-generatePieceOne();
+
+generatePiece();
 function Piecebuilder (x1,y1,x2,y2,x3,y3,x4,y4) {
     this.x1=x1;
     this.x2=x2;
@@ -26,20 +26,13 @@ function Piecebuilder (x1,y1,x2,y2,x3,y3,x4,y4) {
     this.y4=y4;
 }
 function generatePieceOne() {
-let pieceOne= new Piecebuilder(10*box,0,11*box,undefined,12*box,undefined,13*box,);
+let pieceOne= new Piecebuilder(10*box,0,11*box,undefined,12*box,undefined,13*box);
 piece[0]=pieceOne;
 
-ctx.beginPath();
-    ctx.rect(pieceOne.x1,piece[0].y1,box,box);
-    ctx.rect(pieceOne.x2,piece[0].y1,box,box);
-    ctx.rect(pieceOne.x3,piece[0].y1,box,box);
-    ctx.rect(pieceOne.x4,piece[0].y1,box,box);
-    ctx.stroke();
-    
 }
 function generatePieceTwo() {
-    let piecetwo= new Piecebuilder(10*box,0,11*box,0)
-
+    let pieceTwo= new Piecebuilder(10*box,box,11*box,0,10*box,undefined,11*box);
+    piece[0]=pieceTwo;
 
 }
 function generatePieceThree() {
@@ -50,29 +43,16 @@ function generatePieceFour() {
 }
 function move (event) {
 if (event.keyCode===40) {
-    directD="DOWN"
-    draw();
+    directD="DOWN"  
 }
 if (event.keyCode===39) {
-    direct="RIGHT"
-    piece[0].x1+= box;
-    piece[0].x2+= box;
-    piece[0].x3+= box;
-    piece[0].x4+= box;
-    draw();
+    direct="RIGHT"  
 }
 if (event.keyCode===38) {
     direct="UP"
-    draw();
 }
-
 if (event.keyCode===37) {
     direct="LEFT"
-    piece[0].x1-= box;
-    piece[0].x2-= box;
-    piece[0].x3-= box;
-    piece[0].x4-= box;
-    draw();
 }
 
 }
@@ -80,13 +60,13 @@ function clear (c) {
     c.clearRect(0,0,600,600);
  }
 function generatePiece() {
-    let randomSelect=0;           //Math.floor(Math.random()*4);
+    let randomSelect=Math.floor(Math.random()*2);
     if (randomSelect===0) {
         generatePieceOne();
     }
-    // if (randomSelect===1) {
-    //     generatePieceTwo();
-    // }
+     if (randomSelect===1) {
+         generatePieceTwo();
+     }
     // if (randomSelect===2) {
     //     generatePieceThree();
     // }
@@ -95,53 +75,89 @@ function generatePiece() {
     // }
     
 }
-function checkAllPieces() {
 
-    for (let i=0;i<=allPieces.length;i++) {
-        if (allPieces[i]) {
-    ctx.beginPath();
-    ctx.rect(allPieces[0].x1,allPieces[0].y1,box,box);
-    ctx.rect(allPieces[0].x2,allPieces[0].y1,box,box);
-    ctx.rect(allPieces[0].x3,allPieces[0].y1,box,box);
-    ctx.rect(allPieces[0].x4,allPieces[0].y1,box,box);
-    ctx.stroke();
+function collision() {
+    for (let i=0;i<allPieces.length;i++) {
+        if (piece[0].y1+box===allPieces[i].y1 || piece[0].y1+box===575) {
+            if (piece[0].x1===allPieces[i].x1||piece[0].x1===allPieces[i].x2||piece[0].x1===allPieces[i].x3||piece[0].x1===allPieces[i].x4) {
+            console.log("IM HERE");
+            return false;
+            }
+        }
     }
-}
+    return true;
 }
 function draw() {
-   if (piece[0].y1===600) {
+   if (piece[0].y1===600 || collision()!==true) {
        allPieces[count]=piece[0];
+       console.log("NOW HERE");
        count++;
        piece.pop();
        generatePiece();
         }
-       
     
+      if (piece[0].y1!==575 && collision()) {
+        ctx.clearRect(piece[0].x1,piece[0].y1,box,box);
+        ctx.clearRect(piece[0].x2,piece[0].y1,box,box);
+        ctx.clearRect(piece[0].x3,piece[0].y1,box,box);
+        ctx.clearRect(piece[0].x4,piece[0].y1,box,box);
+      }
+     
     
-    clear(ctx);
-    checkAllPieces();
-    ctx.beginPath();
-    ctx.rect(piece[0].x1,piece[0].y1,box,box);
-    ctx.rect(piece[0].x2,piece[0].y1,box,box);
-    ctx.rect(piece[0].x3,piece[0].y1,box,box);
-    ctx.rect(piece[0].x4,piece[0].y1,box,box);
-    ctx.stroke();
+
     
     pieceX1=piece[0].x1;
     pieceX2=piece[0].x2;
     pieceX3=piece[0].x3;
     pieceX4=piece[0].x4;
-
-    pieceY=piece[0].y1;
+    pieceY1=piece[0].y1;
+    pieceY2=piece[0].y2;
     piece.pop();
-    //if (direct === "LEFT") pieceX -= box;
-    //if (direct === "RIGHT") pieceX += box;
-    if (directD === "DOWN") pieceY += box;
+    
+    if (direct === "LEFT") {
+        pieceX1-= box;
+        pieceX2-= box;
+        pieceX3-= box;
+        pieceX4-= box;
+        direct="";
+    }
+    if (direct === "RIGHT") {  
+        pieceX1+= box;
+        pieceX2+= box;
+        pieceX3+= box;
+        pieceX4+= box;
+        direct="";};
+    if (directD === "DOWN") {
+        pieceY1 += box;
+        pieceY2 += box;
+    }
   
 
-let newPiece={x1:pieceX1,x2:pieceX2,x3:pieceX3,x4:pieceX4, y1:pieceY};
+let newPiece = {
+    x1:pieceX1,
+    x2:pieceX2,
+    x3:pieceX3,
+    x4:pieceX4,
+    y1:pieceY1,
+    y2:pieceY2
+};
 
-    piece.unshift(newPiece);
+piece.unshift(newPiece);
 
+if (piece[0].y2===undefined) {
+    ctx.fillStyle="Green";
+    ctx.fillRect(piece[0].x1,piece[0].y1,box,box);
+    ctx.fillRect(piece[0].x2,piece[0].y1,box,box);
+    ctx.fillRect(piece[0].x3,piece[0].y1,box,box);
+    ctx.fillRect(piece[0].x4,piece[0].y1,box,box);
+}
+if (piece[0].y2!==undefined && piece[0].y2!==null) {
+    ctx.fillStyle="Green";
+    ctx.fillRect(piece[0].x1,piece[0].y2,box,box);
+    ctx.fillRect(piece[0].x2,piece[0].y2,box,box);
+    ctx.fillRect(piece[0].x3,piece[0].y1,box,box);
+    ctx.fillRect(piece[0].x4,piece[0].y1,box,box);
+    }
 
 }
+setInterval(draw,400);
