@@ -44,6 +44,7 @@ function generatePieceFour() {
 function move (event) {
 if (event.keyCode===40) {
     directD="DOWN"  
+    draw();
 }
 if (event.keyCode===39) {
     direct="RIGHT"  
@@ -75,11 +76,28 @@ function generatePiece() {
     // }
     
 }
+function checkYDistance() {
+ let arr=[];   
+for (let i=0;i<allPieces.length;i++) {
+    if (!isNaN(allPieces[i].y2)) {
 
+let y2Distance=allPieces[i].y2-piece[0].y1;
+
+arr.push(y2Distance);
+    }
+    else {
+        let y1Distance=allPieces[i].y1-piece[0].y1
+        arr.push(y1Distance);
+    }
+}
+return Math.min(...arr);
+
+}
 function collision() {
     for (let i=0;i<allPieces.length;i++) {
-        if (piece[0].y1+box===allPieces[i].y1 || piece[0].y1+box===575) {
-            if (piece[0].x1===allPieces[i].x1||piece[0].x1===allPieces[i].x2||piece[0].x1===allPieces[i].x3||piece[0].x1===allPieces[i].x4) {
+        if(checkYDistance()<=25)
+        {
+         if (piece[0].x1===allPieces[i].x1||piece[0].x1===allPieces[i].x2||piece[0].x1===allPieces[i].x3||piece[0].x1===allPieces[i].x4) {
             console.log("IM HERE");
             return false;
             }
@@ -88,19 +106,29 @@ function collision() {
     return true;
 }
 function draw() {
-   if (piece[0].y1===600 || collision()!==true) {
+   if (piece[0].y1===575 || collision()!==true) {
        allPieces[count]=piece[0];
        console.log("NOW HERE");
        count++;
        piece.pop();
        generatePiece();
         }
-    
+    //Check which piece is on canvas by amount of y coordinates and clear each time draw() is called
       if (piece[0].y1!==575 && collision()) {
-        ctx.clearRect(piece[0].x1,piece[0].y1,box,box);
-        ctx.clearRect(piece[0].x2,piece[0].y1,box,box);
-        ctx.clearRect(piece[0].x3,piece[0].y1,box,box);
-        ctx.clearRect(piece[0].x4,piece[0].y1,box,box);
+        if (piece[0].y2===undefined || isNaN(piece[0].y2)) {
+        ctx.clearRect(piece[0].x1-1,piece[0].y1-1,box+4,box+4);
+        ctx.clearRect(piece[0].x2-1,piece[0].y1-1,box+4,box+4);
+        ctx.clearRect(piece[0].x3-1,piece[0].y1-1,box+4,box+4);
+        ctx.clearRect(piece[0].x4-1,piece[0].y1-1,box+4,box+4);
+        ctx.beginPath();
+        }
+        if  (piece[0].y2!==undefined && piece[0].y2!==null) {
+            ctx.clearRect(piece[0].x1-1,piece[0].y2-1,box+4,box+4);
+            ctx.clearRect(piece[0].x2-1,piece[0].y2-1,box+4,box+4);
+            ctx.clearRect(piece[0].x3-1,piece[0].y1-1,box+4,box+4);
+            ctx.clearRect(piece[0].x4-1,piece[0].y1-1,box+4,box+4);
+            ctx.beginPath();
+        }
       }
      
     
@@ -144,20 +172,33 @@ let newPiece = {
 
 piece.unshift(newPiece);
 
-if (piece[0].y2===undefined) {
+if (piece[0].y2===undefined || isNaN(piece[0].y2)) {
+    ctx.beginPath();
     ctx.fillStyle="Green";
     ctx.fillRect(piece[0].x1,piece[0].y1,box,box);
     ctx.fillRect(piece[0].x2,piece[0].y1,box,box);
     ctx.fillRect(piece[0].x3,piece[0].y1,box,box);
     ctx.fillRect(piece[0].x4,piece[0].y1,box,box);
+    ctx.strokeStyle= "black";
+    ctx.strokeRect(piece[0].x1,piece[0].y1,box,box);
+    ctx.strokeRect(piece[0].x2,piece[0].y1,box,box);
+    ctx.strokeRect(piece[0].x3,piece[0].y1,box,box);
+    ctx.strokeRect(piece[0].x4,piece[0].y1,box,box);
 }
 if (piece[0].y2!==undefined && piece[0].y2!==null) {
+    ctx.beginPath();
     ctx.fillStyle="Green";
     ctx.fillRect(piece[0].x1,piece[0].y2,box,box);
     ctx.fillRect(piece[0].x2,piece[0].y2,box,box);
     ctx.fillRect(piece[0].x3,piece[0].y1,box,box);
     ctx.fillRect(piece[0].x4,piece[0].y1,box,box);
+    ctx.strokeStyle= "black";
+    ctx.strokeRect(piece[0].x1,piece[0].y2,box,box);
+    ctx.strokeRect(piece[0].x2,piece[0].y2,box,box);
+    ctx.strokeRect(piece[0].x3,piece[0].y1,box,box);
+    ctx.strokeRect(piece[0].x4,piece[0].y1,box,box);
+    
     }
-
+    
 }
 setInterval(draw,400);
