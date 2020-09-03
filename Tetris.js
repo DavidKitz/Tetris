@@ -1,6 +1,6 @@
-// Get move logic set up
+// Pieces can be moved inside each other from left or right
 // Get the pieces into pieces array and when they hit the bottom add them to allPieces and pop + generate new Piece
-//Get Logic for New Piece generation
+//collision checks y coords and then x from all pieces so different pieces for x and y are used
 
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
@@ -43,17 +43,21 @@ function generatePieceFour() {
 }
 function move (event) {
 if (event.keyCode===40) {
-    directD="DOWN"  
+    directD="DOWN"
     draw();
+    collision();  
 }
 if (event.keyCode===39) {
-    direct="RIGHT"  
+    direct="RIGHT";
+    collision(); 
 }
 if (event.keyCode===38) {
-    direct="UP"
+    direct="UP";
+    collision();
 }
 if (event.keyCode===37) {
-    direct="LEFT"
+    direct="LEFT";
+    collision();
 }
 
 }
@@ -78,33 +82,102 @@ function generatePiece() {
 }
 function checkYDistance() {
  let arr=[];   
+ 
 for (let i=0;i<allPieces.length;i++) {
     if (!isNaN(allPieces[i].y2)) {
 
 let y2Distance=allPieces[i].y2-piece[0].y1;
-
-arr.push(y2Distance);
+        if (y2Distance<=25) {
+            arr.push(y2Distance,i); 
+        }
     }
     else {
         let y1Distance=allPieces[i].y1-piece[0].y1
-        arr.push(y1Distance);
+        
+        if (y1Distance<=25) {
+            arr.push(y1Distance,i); 
+    
+        }
     }
 }
-return Math.min(...arr);
+
+return arr;
 
 }
+function checkXDistance(k) {
+       
+   if (piece[0].x1===allPieces[k].x1||piece[0].x1===allPieces[k].x2||piece[0].x1===allPieces[k].x3||piece[0].x1===allPieces[k].x4) {
+       return true;
+   }
+   else if (piece[0].x2===allPieces[k].x1||piece[0].x2===allPieces[k].x2||piece[0].x2===allPieces[k].x3||piece[0].x2===allPieces[k].x4)
+   {
+       return true;
+   } 
+   else if (piece[0].x3===allPieces[k].x1||piece[0].x3===allPieces[k].x2||piece[0].x3===allPieces[k].x3||piece[0].x3===allPieces[k].x4)
+   {
+       return true;
+   } 
+
+   else if (piece[0].x4===allPieces[k].x1||piece[0].x4===allPieces[k].x4||piece[0].x4===allPieces[k].x3||piece[0].x4===allPieces[k].x4)
+   {
+       return true;
+   } 
+
+return false;
+     
+}
+function removeDirect(k) {
+    
+    if (piece[0].x1+box===allPieces[k].x1||piece[0].x1+box===allPieces[k].x2||piece[0].x1+box===allPieces[k].x3||piece[0].x1+box===allPieces[k].x4) {
+       if(direct==="RIGHT") direct="";
+    }
+    else if (piece[0].x2+box===allPieces[k].x1||piece[0].x2+box===allPieces[k].x2||piece[0].x2+box===allPieces[k].x3||piece[0].x2+box===allPieces[k].x4)
+    {
+       if(direct==="RIGHT") direct="";
+    } 
+    else if (piece[0].x3+box===allPieces[k].x1||piece[0].x3+box===allPieces[k].x2||piece[0].x3+box===allPieces[k].x3||piece[0].x3+box===allPieces[k].x4)
+    {
+       if(direct==="RIGHT") direct="";
+    } 
+    else if (piece[0].x4+box===allPieces[k].x1||piece[0].x4+box===allPieces[k].x4||piece[0].x4+box===allPieces[k].x3||piece[0].x4+box===allPieces[k].x4)
+    {
+       if(direct==="RIGHT") direct="";
+    } 
+    if (piece[0].x1-box===allPieces[k].x1||piece[0].x1-box===allPieces[k].x2||piece[0].x1-box===allPieces[k].x3||piece[0].x1-box===allPieces[k].x4) {
+        if(direct==="LEFT") direct="";
+     }
+     else if (piece[0].x2-box===allPieces[k].x1||piece[0].x2-box===allPieces[k].x2||piece[0].x2-box===allPieces[k].x3||piece[0].x2-box===allPieces[k].x4)
+     {
+        if(direct==="LEFT") direct="";
+     } 
+     else if (piece[0].x3-box===allPieces[k].x1||piece[0].x3-box===allPieces[k].x2||piece[0].x3-box===allPieces[k].x3||piece[0].x3-box===allPieces[k].x4)
+     {
+        if(direct==="LEFT") direct="";
+     } 
+     else if (piece[0].x4-box===allPieces[k].x1||piece[0].x4-box===allPieces[k].x4||piece[0].x4-box===allPieces[k].x3||piece[0].x4-box===allPieces[k].x4)
+     {
+        if(direct==="LEFT") direct="";
+     } 
+}
 function collision() {
-    for (let i=0;i<allPieces.length;i++) {
-        if(checkYDistance()<=25)
-        {
-         if (piece[0].x1===allPieces[i].x1||piece[0].x1===allPieces[i].x2||piece[0].x1===allPieces[i].x3||piece[0].x1===allPieces[i].x4) {
+    
+        if(checkYDistance()[1]!==undefined)
+        {   removeDirect(checkYDistance()[1]);
+            for (let i=1;i<=checkYDistance().length;i+=2) {
+            let k=checkYDistance()[i];
+            //removeDirect(k);
+            console.log(i);
+         if(checkXDistance(k)) //(piece[0].x1===allPieces[k].x1||piece[0].x1===allPieces[k].x2||piece[0].x1===allPieces[k].x3||piece[0].x1===allPieces[k].x4) 
+         {
+            direct="";
             console.log("IM HERE");
             return false;
             }
         }
-    }
+        }
     return true;
 }
+
 function draw() {
    if (piece[0].y1===575 || collision()!==true) {
        allPieces[count]=piece[0];
