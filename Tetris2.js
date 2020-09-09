@@ -30,7 +30,9 @@ function collision () {
             if(player.matrix[i][x]!==0 &&
             (gameMatrix[i + (player.position.y/box)] && 
             gameMatrix[i + (player.position.y/box)][x + (player.position.x/box)]) !==0 ) {
+                if(player.position.y<0===false) {
                 return true;
+                }
             }
           
         }
@@ -40,15 +42,17 @@ function collision () {
 } 
 function collisionSide(newX) {
     
-    if (newX<0) {
-        player.position.x+=box;
-        return true;
-    }
-    else if(newX > 225) {
-        console.log("hello");
-        player.position.x-=box;
-        return true;
-    }
+         if (newX<0) {
+         player.position.x+=box;
+         return true;
+        }
+        if(+newX > 225) {
+            console.log("hello");
+            player.position.x-=box;
+            return true;
+        } 
+    
+    
     return false;
 }  
 
@@ -56,6 +60,7 @@ function collisionSide(newX) {
 
 function draw(matrix,offset) {
     if (player.position.y===450 || collision() ) {
+        
         player.position.y-=box;
         clearInterval(ticker);
         merge(gameMatrix,player);
@@ -66,7 +71,7 @@ function draw(matrix,offset) {
     ctx.fillStyle="White";
     ctx.fillRect(0,0,300,500);
     drawGameMatrix (gameMatrix);
-    piece.forEach((row,y) => {
+    player.matrix.forEach((row,y) => {
         row.forEach((column,x) => {
             if (column!==0) { 
                 ctx.fillStyle="Green";
@@ -94,10 +99,12 @@ function drawGameMatrix (gameMatrix) {
 
 function merge(gameMatrix,player) {
     
-    piece.forEach((row,y) => {
+    player.matrix.forEach((row,y) => {
         row.forEach((value,x) => {
             if (value!==0) {
+                
                 gameMatrix[(y*box + player.position.y)/box][(x*box+ player.position.x)/box]=value;
+                
                 
             }
         });
@@ -109,7 +116,7 @@ function move (event) {
     if (event.keyCode===40) {
         if (player.position.y===450|| collision()) {
             player.position.y-=box;
-            merge(gameMatrix,player);
+            //merge(gameMatrix,player);
             player.position.y=-50;
             player.position.x=0;
         }
@@ -127,7 +134,7 @@ function move (event) {
        }
     }
     if (event.keyCode===38) {
-           
+           rotate();
     }
     if (event.keyCode===37) {
         if (!collisionSide(player.position.x-=box)) {
@@ -140,22 +147,15 @@ function move (event) {
     }
     
 function rotate() {
-let newMatrix=Array(3).fill().map(() => Array(3).fill(0));
-
-
-
+let newMatrix=[[],[],[]];
 const result=player.matrix.map((row,x) => { 
     row.map((value,y)  => {
-   newMatrix[(player.matrix.length-1)-y][x]=player.matrix[(player.matrix.length-1)-y][x]
+   newMatrix[x].push(player.matrix[(player.matrix.length-1)-y][x])
         
          
     })  
 });
-
-
-
-
-console.log(newMatrix);
+player.matrix=newMatrix;
 
     
 }
