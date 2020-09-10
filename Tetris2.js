@@ -6,13 +6,29 @@ document.addEventListener("keydown",move);
 
 const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
 
-let piece= [
-[0,0,0],
-[0,1,0],
-[1,1,1],
-];
+let tetrisPieces= {
+piece1:[[0,0,0],
+        [0,1,0],
+        [1,1,1]],
+
+piece2:[[1,1,1,1],
+        [0,0,0,0],
+        [0,0,0,0]],
+
+piece3:[[1,0,0],
+        [1,0,0]
+        [1,1,0]],
+
+piece4:[[1,0,0],
+        [1,1,0],
+        [0,1,0]],
+
+piece5:[[0,0,0],
+        [1,1,0],
+        [1,1,0]]
+}
 const player= {
-    matrix: piece,
+    matrix: generatePiece(),
     position: {
         x:0,
         y:-50
@@ -42,18 +58,33 @@ function collision () {
 } 
 function collisionSide(newX) {
     
-         if (newX<0) {
-         player.position.x+=box;
-         return true;
-        }
-        if(+newX > 225) {
-            console.log("hello");
+
+    player.matrix.forEach((row,y)=> {
+        row.forEach((value,x)=> {
+            if (value!==0 && (x*box+player.position.x)>275) {
+                console.log("hello");
             player.position.x-=box;
             return true;
-        } 
-    
-    
+            }
+            if (value!==0 && (x*box+player.position.x)<0) {
+                player.position.x+=box;
+                return true;
+            }
+        })
+    })
     return false;
+    //      if (newX<0) {
+    //      player.position.x+=box;
+    //      return true;
+    //     }
+    //     if(newX > 225) {
+    //         console.log("hello");
+    //         player.position.x-=box;
+    //         return true;
+    //     } 
+    
+    
+    // return false;
 }  
 
        
@@ -97,6 +128,31 @@ function drawGameMatrix (gameMatrix) {
 
 }
 
+function generatePiece () {
+
+    let nbrGenerator=Math.floor(Math.random()*5);
+    let ray=Object.keys(tetrisPieces)[0]
+    if (nbrGenerator===0) {
+        return tetrisPieces.piece1;
+    }
+    else if (nbrGenerator===1) {
+        return tetrisPieces.piece2;
+    }
+    else if (nbrGenerator===2) {
+        return tetrisPieces.piece3;
+    }
+    else if (nbrGenerator===3) {
+        return tetrisPieces.piece4;
+    }
+    else if (nbrGenerator===4) {
+        return tetrisPieces.piece5;
+    }
+
+    
+
+}
+
+
 function merge(gameMatrix,player) {
     
     player.matrix.forEach((row,y) => {
@@ -135,6 +191,7 @@ function move (event) {
     }
     if (event.keyCode===38) {
            rotate();
+           
     }
     if (event.keyCode===37) {
         if (!collisionSide(player.position.x-=box)) {
@@ -156,10 +213,22 @@ const result=player.matrix.map((row,x) => {
     })  
 });
 player.matrix=newMatrix;
-
+checkRotatePosition();
     
 }
-
+function checkRotatePosition() {
+player.matrix.forEach((row,y)=> {
+    row.forEach((value,x) => {
+        if(value !== 0 && player.position.x+box*x < 0) {
+            player.position.x += box;
+        }
+        if(value !== 0 && player.position.x+box*x > 275) {
+            player.position.x -= box;
+        }
+    })
+} 
+)
+}
 
 
 
