@@ -5,6 +5,7 @@ const box= 25;
 document.addEventListener("keydown",move);
 
 const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
+let ticker=setInterval(callDraw,1000);
 
 let tetrisPieces= {
 piece1:[[0,0,0],
@@ -16,7 +17,7 @@ piece2:[[1,1,1,1],
         [0,0,0,0]],
 
 piece3:[[1,0,0],
-        [1,0,0]
+        [1,0,0],
         [1,1,0]],
 
 piece4:[[1,0,0],
@@ -34,6 +35,7 @@ const player= {
         y:-50
     }
 }
+
 function callDraw() {
     player.position.y+=box;
     draw(player.matrix,player.position);
@@ -148,8 +150,6 @@ function generatePiece () {
         return tetrisPieces.piece5;
     }
 
-    
-
 }
 
 
@@ -233,4 +233,3 @@ player.matrix.forEach((row,y)=> {
 
 
 
-let ticker=setInterval(callDraw,1000);
