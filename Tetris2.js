@@ -1,4 +1,6 @@
-//After first drop ,piece starts from aboce canvas triggering merge() error --needs fix
+//collision works because as soon as piece goes of gameMatrix field it produces undefined which turns !==0 to true
+//So as soon as piece touches bottom border collision returns true
+//piece 2 has earlier impact duo to one more array length size so needs to stop not to earlie with y coordinate condition at draw()
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
 const box= 25;
@@ -12,17 +14,18 @@ piece1:[[0,0,0],
         [0,1,0],
         [1,1,1]],
 
-piece2:[[1,1,1,1],
+piece2:[[0,0,0,0],
         [0,0,0,0],
-        [0,0,0,0]],
+        [0,0,0,0],
+        [1,1,1,1]],
 
 piece3:[[1,0,0],
         [1,0,0],
         [1,1,0]],
 
-piece4:[[1,0,0],
-        [1,1,0],
-        [0,1,0]],
+piece4:[[0,0,0],
+        [0,1,1],
+        [1,1,0]],
 
 piece5:[[0,0,0],
         [1,1,0],
@@ -42,7 +45,7 @@ function callDraw() {
 }
 
 function collision () {
-   
+    
     for (let i=0;i<player.matrix.length;i++) {
         for (let x=0;x<player.matrix.length;x++) {
             if(player.matrix[i][x]!==0 &&
@@ -64,11 +67,10 @@ function collisionSide(newX) {
     player.matrix.forEach((row,y)=> {
         row.forEach((value,x)=> {
             if (value!==0 && (x*box+player.position.x)>275) {
-                console.log("hello");
             player.position.x-=box;
             return true;
             }
-            if (value!==0 && (x*box+player.position.x)<0) {
+            else if (value!==0 && (x*box+player.position.x)<0) {
                 player.position.x+=box;
                 return true;
             }
@@ -88,18 +90,60 @@ function collisionSide(newX) {
     
     // return false;
 }  
+function checkForTetris() {
+  let nbrs=[];  
+    gameMatrix.forEach((row,y)=> {
+        let count=0;
+        row.forEach((value,x)=> {
+            if (value === 1) {
+                count++
+                if (count===12) {
+                    nbrs.push(y);
+                    //drawAfterTetris(y);
+                }
+            }
+            
+    })
+        
+    })
+    if(nbrs.length!==0) {
+   nbrs.sort((a, b)=>{return b-a});
+    for(let i=0;i<nbrs.length;i++) {
+        drawAfterTetris(nbrs[i]);
+   }
+}
+}
+function drawAfterTetris(nbr) {
+console.log(nbr);
+    gameMatrix[nbr].forEach((value,x)=> {
+        gameMatrix[nbr][x]=0;        
+    })
+    for (let i=gameMatrix.length-1;i>=0;i--) {
+  
+        gameMatrix[nbr-i].forEach((value,x)=> {
+            if(value!==0) {
+                gameMatrix[nbr-i][x]=gameMatrix[nbr][x];
+                gameMatrix[nbr][x]=1;
+            }
+        }
+        )
+    
+    }
+    
+}
+
 
        
 
 function draw(matrix,offset) {
-    if (player.position.y===450 || collision() ) {
-        
+    if (player.position.y===450 && player.matrix[0].length!== 4 || collision() ) {
         player.position.y-=box;
         clearInterval(ticker);
         merge(gameMatrix,player);
         player.position.y=-25;
         player.position.x=0;
         ticker=setInterval(callDraw,1000);
+        player.matrix= generatePiece();
     }
     ctx.fillStyle="White";
     ctx.fillRect(0,0,300,500);
@@ -129,6 +173,9 @@ function drawGameMatrix (gameMatrix) {
     })
 
 }
+
+
+
 
 function generatePiece () {
 
@@ -204,15 +251,32 @@ function move (event) {
     }
     
 function rotate() {
-let newMatrix=[[],[],[]];
-const result=player.matrix.map((row,x) => { 
+    if (player.matrix[0].length === 4) {
+        console.log("hello");
+        let newMatrix=[[],[],[],[]];
+        player.matrix.map((row,x) => { 
+            row.map((value,y)  => {
+                
+           newMatrix[x].push(player.matrix[(player.matrix.length-1)-y][x])
+                
+                 
+            })  
+        });
+        player.matrix=newMatrix;
+    }
+    else {
+let newMatrix2=[[],[],[]];
+ player.matrix.map((row,x) => { 
     row.map((value,y)  => {
-   newMatrix[x].push(player.matrix[(player.matrix.length-1)-y][x])
+        
+   newMatrix2[x].push(player.matrix[(player.matrix.length-1)-y][x])
         
          
     })  
 });
-player.matrix=newMatrix;
+player.matrix=newMatrix2;
+    }
+
 checkRotatePosition();
     
 }
