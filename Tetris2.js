@@ -1,6 +1,6 @@
 //collision works because as soon as piece goes of gameMatrix field it produces undefined which turns !==0 to true
-//So as soon as piece touches bottom border collision returns true
-//When pressing left or right on the arrow keys they merge inside the other pieces, need to detect the collision if these buttons are pressed
+//Pieces after tetris do not correctly drop down if beneath them there is open space, causing them to float in the air
+//
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
 const box= 25;
@@ -29,12 +29,20 @@ piece4:[[0,0,0],
 
 piece5:[[0,0,0],
         [1,1,0],
-        [1,1,0]]
+        [1,1,0]],
+
+piece6:[[0,0,0],
+        [1,1,0],
+        [0,1,1]],
+
+piece7:[[0,0,1],
+        [0,0,1],
+        [0,1,1]]
 }
 const player= {
     matrix: generatePiece(),
     position: {
-        x:0,
+        x:100,
         y:-50
     }
 }
@@ -61,7 +69,7 @@ function collision () {
     return false;
 
 } 
-function collisionSide(newX) {
+function collisionSide() {
     
 
     player.matrix.forEach((row,y)=> {
@@ -77,19 +85,24 @@ function collisionSide(newX) {
         })
     })
     return false;
-    //      if (newX<0) {
-    //      player.position.x+=box;
-    //      return true;
-    //     }
-    //     if(newX > 225) {
-    //         console.log("hello");
-    //         player.position.x-=box;
-    //         return true;
-    //     } 
-    
-    
-    // return false;
 }  
+function collisionPiece(e) {
+    player.matrix.forEach((row,y)=> {
+        row.forEach((value,x)=> {
+            if (value!==0 && (gameMatrix[y+player.position.y/box]!==undefined && 
+                gameMatrix[y+player.position.y/box][x+player.position.x/box]!==0)) {
+                if(e===37) {
+                    player.position.x+=box;
+                    return true;
+                }
+                else if(e===39){
+                    player.position.x-=box;
+                    return true;
+                }
+            }
+        })
+})
+}
 function checkForTetris() {
   let nbrs=[];  
     gameMatrix.forEach((row,y)=> {
@@ -131,36 +144,15 @@ console.log(tetrisNbrs);
    
 }
 
-function reposition() {
-
-    // gameMatrix.forEach((row,y)=> {
-    //     row.forEach((value,x)=> {
-    //         if(value!==0 && ((player.position.x/box+x)===))
-
-    //     })
-    // })
-    for (let i=0;i<player.matrix.length;i++) {
-        for (let x=0;x<player.matrix.length;x++) {
-            if(player.matrix[i][x]!==0 &&
-            (gameMatrix[i + (player.position.y/box)] && 
-            gameMatrix[i + (player.position.y/box)][x + (player.position.x/box)]) !==0 ) {
-                player.position.x+=box;
-            }
-}
-    }
-}
-       
-
 function draw(matrix,offset) {
     if (collision()) {
         
-        console.log("i turn true now");
-        player.position.y-=box;
+        //player.position.y-=box;
         clearInterval(ticker);
         merge(gameMatrix,player);
         checkForTetris();
         player.position.y=-25;
-        player.position.x=0;
+        player.position.x=100;
         ticker=setInterval(callDraw,1000);
         player.matrix= generatePiece();
     }
@@ -198,7 +190,7 @@ function drawGameMatrix (gameMatrix) {
 
 function generatePiece () {
 
-    let nbrGenerator=Math.floor(Math.random()*5);
+    let nbrGenerator=Math.floor(Math.random()*7);
     let ray=Object.keys(tetrisPieces)[0]
     if (nbrGenerator===0) {
         return tetrisPieces.piece1;
@@ -215,6 +207,12 @@ function generatePiece () {
     else if (nbrGenerator===4) {
         return tetrisPieces.piece5;
     }
+     else if (nbrGenerator===5) {
+         return tetrisPieces.piece6;
+     }
+     else if (nbrGenerator===6) {
+         return tetrisPieces.piece7;
+     }
 
 }
 
@@ -225,24 +223,18 @@ function merge(gameMatrix,player) {
         row.forEach((value,x) => {
             if (value!==0) {
                 
-                gameMatrix[(y*box + player.position.y)/box][(x*box+ player.position.x)/box]=value;
+                gameMatrix[(y*box + (player.position.y))/box-1][(x*box+ player.position.x)/box]=value;
+                }
                 
-                
-            }
-        });
+            });
     });
-}
 
+}
 
 function move (event) {
     if (event.keyCode===40) {
-        if (player.position.y===450|| collision()) {
-            player.position.y-=box;
-            //merge(gameMatrix,player);
-            player.position.y=-50;
-            player.position.x=0;
-        }
-        else {
+        if (!collision()) {
+            
             player.position.y+=box;
             draw(player.matrix,player.position);
             clearInterval(ticker);
@@ -250,7 +242,7 @@ function move (event) {
             }
     }
     if (event.keyCode===39) {
-       if (!collisionSide(player.position.x+=box)) {
+       if (!collisionSide(player.position.x+=box) && !collisionPiece(39)) {
         
         draw(player.matrix,player.position);
        }
@@ -260,7 +252,7 @@ function move (event) {
            
     }
     if (event.keyCode===37) {
-        if (!collisionSide(player.position.x-=box)) {
+        if (!collisionSide(player.position.x-=box) && !collisionPiece(37)) {
         
         draw(player.matrix,player.position);
         }
