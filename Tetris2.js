@@ -4,10 +4,17 @@
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
 const box= 25;
+const score=document.getElementById("score");
+const highscore=document.getElementById("high");
+const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
+let points=0;
+let ticker=setInterval(callDraw,1000);
+score.innerHTML="Score :" ;
+highscore.innerHTML=" Highscore :";
+
 document.addEventListener("keydown",move);
 
-const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
-let ticker=setInterval(callDraw,1000);
+
 
 let tetrisPieces= {
 piece1:[[0,0,0],
@@ -52,6 +59,42 @@ function callDraw() {
     draw(player.matrix,player.position);
 }
 
+function checkForTetris() {
+    let nbrs=[];  
+      gameMatrix.forEach((row,y)=> {
+          let count=0;
+          row.forEach((value,x)=> {
+              if (value === 1) {
+                  count++
+                  if (count===12) {
+                      nbrs.push(y);
+                  }
+              }
+              
+          })   
+      })
+      if(nbrs.length!==0) {
+           nbrs.sort((a, b)=>{return b-a});  
+            drawAfterTetris(...nbrs);  
+      }
+  }
+
+function checkRotatePosition() {
+    player.matrix.forEach((row,y)=> {
+        row.forEach((value,x) => {
+            if(value !== 0 && player.position.x+box*x < 0) {
+                player.position.x += box;
+            }
+            if(value !== 0 && player.position.x+box*x > 275) {
+                player.position.x -= box;
+            }
+        })
+    } 
+    )
+    }
+
+      
+    
 function collision () {
     
     for (let i=0;i<player.matrix.length;i++) {
@@ -103,46 +146,7 @@ function collisionPiece(e) {
         })
 })
 }
-function checkForTetris() {
-  let nbrs=[];  
-    gameMatrix.forEach((row,y)=> {
-        let count=0;
-        row.forEach((value,x)=> {
-            if (value === 1) {
-                count++
-                if (count===12) {
-                    nbrs.push(y);
-                }
-            }
-            
-        })   
-    })
-    if(nbrs.length!==0) {
-         nbrs.sort((a, b)=>{return b-a});  
-          drawAfterTetris(...nbrs);  
-    }
-}
-function drawAfterTetris(...arrayTetris) {
 
-let tetrisNbrs=arrayTetris;
-console.log(tetrisNbrs);
-    for (let i=0;i<tetrisNbrs.length;i++) {
-      gameMatrix[tetrisNbrs[i]].forEach((value,x)=> {
-          gameMatrix[tetrisNbrs[i]][x]=0;        
-        })
-    }
-    for (let i=0;i<=tetrisNbrs[tetrisNbrs.length-1];i++) {
-        if(gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i]!==undefined) {
-            gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i].forEach((value,x)=> {
-                if(value!==0) {
-                    gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i][x]= gameMatrix[(tetrisNbrs[0])-i][x];
-                    gameMatrix[(tetrisNbrs[0])-i][x]=1;
-                }
-                })
-        }
-    }   
-   
-}
 
 function draw(matrix,offset) {
     if (collision()) {
@@ -170,6 +174,38 @@ player.matrix.forEach((row,y) => {
     })
 });
 }
+
+
+function drawAfterTetris(...arrayTetris) {
+    let tetrisNbrs=arrayTetris;
+    keepScore(...tetrisNbrs);
+    console.log(tetrisNbrs);
+        for (let i=0;i<tetrisNbrs.length;i++) {
+          gameMatrix[tetrisNbrs[i]].forEach((value,x)=> {
+              gameMatrix[tetrisNbrs[i]][x]=0;        
+            })
+        }
+        for (let i=0;i<=tetrisNbrs[tetrisNbrs.length-1];i++) {
+            if(gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i]!==undefined) {
+                gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i].forEach((value,x)=> {
+                    if(value!==0) {
+                        gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i][x]= gameMatrix[(tetrisNbrs[0])-i][x];
+                        gameMatrix[(tetrisNbrs[0])-i][x]=1;
+                        // if (gameMatrix[(tetrisNbrs[0])-i+1]!== undefined && gameMatrix[(tetrisNbrs[0])-i+1][x]===0) {
+                        //     gameMatrix[(tetrisNbrs[0])-i][x]=0;
+                        //     for (let k=tetrisNbrs[tetrisNbrs.length-1];k===0;k--)  {
+                        //         if(gameMatrix[(tetrisNbrs[0])+k]!==undefined && gameMatrix[(tetrisNbrs[0])+k][x]===0)
+                        //             gameMatrix[(tetrisNbrs[0])+k][x]=1;
+                        //             k=0;
+                        //     }
+                    }})
+                    }
+            }
+        }   
+       
+    
+
+
 function drawGameMatrix (gameMatrix) {
     gameMatrix.forEach((row,y) => {
         row.forEach((column,x) => {
@@ -214,6 +250,17 @@ function generatePiece () {
          return tetrisPieces.piece7;
      }
 
+}
+function keepScore(...tetrisArr) {
+let tetrisLength=tetrisArr;
+if (tetrisLength.length===4) {
+    points += 10;
+    score.innerHTML= "Score: "+ points;
+}
+else {
+    points+= 2*tetrisLength.length;
+    score.innerHTML= "Score: "+ points;
+}
 }
 
 
@@ -284,19 +331,6 @@ function rotate() {
 
 checkRotatePosition();
     
-}
-function checkRotatePosition() {
-player.matrix.forEach((row,y)=> {
-    row.forEach((value,x) => {
-        if(value !== 0 && player.position.x+box*x < 0) {
-            player.position.x += box;
-        }
-        if(value !== 0 && player.position.x+box*x > 275) {
-            player.position.x -= box;
-        }
-    })
-} 
-)
 }
 
 
