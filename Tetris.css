@@ -2,3 +2,11 @@ canvas {
     
     border: 2px black solid;
 }
+#high {
+    margin-left: 5%;
+}
+span {
+    font-weight: 600;
+    font-family:  Calibri, 'Trebuchet MS', sans-serif;
+    font-size: large;
+}

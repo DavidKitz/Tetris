@@ -9,8 +9,8 @@ const highscore=document.getElementById("high");
 const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
 let points=0;
 let ticker=setInterval(callDraw,1000);
-score.innerHTML="Score :" ;
-highscore.innerHTML=" Highscore :";
+score.innerHTML="Score: "+ points ;
+highscore.innerHTML=" Highscore: "+ points;
 
 document.addEventListener("keydown",move);
 
@@ -185,6 +185,7 @@ function drawAfterTetris(...arrayTetris) {
               gameMatrix[tetrisNbrs[i]][x]=0;        
             })
         }
+        //Needs work here, if in the upper 4lines tetris is happening error chances are high
         for (let i=0;i<=tetrisNbrs[tetrisNbrs.length-1];i++) {
             if(gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i]!==undefined) {
                 gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i].forEach((value,x)=> {
@@ -221,8 +222,29 @@ function drawGameMatrix (gameMatrix) {
 
 }
 
+function dropPiece() {
+    while(!collision()) {        
+        player.position.y+=box;
+    }
 
+    player.position.y-=box;  
 
+}
+
+function gameState() {
+
+    //check with forEach in gameMatrix if the first 4 rows are alrdy taken
+    // if its true check if player position collides with gameMatrix in the first row
+
+    player.matrix.forEach((row,y)=> {
+        row.forEach((value,x)=> {
+            if(gameMatrix[y+ (player.position.y/box)][x+(player.position.x)]!==0 && player.position.){
+
+            }
+        })
+    })
+
+}
 
 function generatePiece () {
 
@@ -288,22 +310,28 @@ function move (event) {
             ticker=setInterval(callDraw,1000);
             }
     }
-    if (event.keyCode===39) {
+    
+    else if (event.keyCode===39) {
        if (!collisionSide(player.position.x+=box) && !collisionPiece(39)) {
         
         draw(player.matrix,player.position);
        }
     }
-    if (event.keyCode===38) {
+    else if (event.keyCode===38) {
            rotate();
            
     }
-    if (event.keyCode===37) {
+    else if (event.keyCode===37) {
         if (!collisionSide(player.position.x-=box) && !collisionPiece(37)) {
         
         draw(player.matrix,player.position);
         }
        
+    }
+    else if (event.keyCode===32) {
+        dropPiece();
+        
+
     }
 }
     
