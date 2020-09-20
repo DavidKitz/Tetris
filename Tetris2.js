@@ -55,6 +55,9 @@ const player= {
 }
 
 function callDraw() {
+    gameState();
+       
+
     player.position.y+=box;
     draw(player.matrix,player.position);
 }
@@ -149,7 +152,10 @@ function collisionPiece(e) {
 
 
 function draw(matrix,offset) {
-    if (collision()) {
+    if(gameState()){
+       return;
+    } 
+   else if (collision()) {
         
         //player.position.y-=box;
         clearInterval(ticker);
@@ -232,17 +238,33 @@ function dropPiece() {
 }
 
 function gameState() {
-
-    //check with forEach in gameMatrix if the first 4 rows are alrdy taken
-    // if its true check if player position collides with gameMatrix in the first row
-
-    player.matrix.forEach((row,y)=> {
-        row.forEach((value,x)=> {
-            if(gameMatrix[y+ (player.position.y/box)][x+(player.position.x)]!==0 && player.position.){
-
+    
+    for (let i=0;i<=2;i++) {
+        gameMatrix[i].forEach((value,x)=> {
+            if(value!==0){
+                for (let k=0;k<player.matrix.length;k++) {
+                    for (let x=0;x<player.matrix.length;x++) {
+                        if(player.matrix[k][x]!==0 &&
+                        (gameMatrix[k + (player.position.y/box)] && 
+                        gameMatrix[k + (player.position.y/box)][x + (player.position.x/box)]) !==0 ) { 
+                            document.removeEventListener("keydown",move);
+                            clearInterval(ticker);
+                            let btn=document.createElement("button");
+                            let txt=document.createElement("h1");
+                            txt.innerHTML="Game Over! You got "+points+" points.";
+                            btn.innerHTML="Play again!";
+                            btn.addEventListener("click", ()=> location.reload());
+                            document.body.appendChild(btn);
+                            document.body.appendChild(txt);
+                            return true;     
+                        }
+                    }
+                }
             }
-        })
-    })
+        })       
+    }        
+    
+
 
 }
 
