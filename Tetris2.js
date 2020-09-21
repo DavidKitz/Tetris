@@ -8,10 +8,14 @@ const score=document.getElementById("score");
 const highscore=document.getElementById("high");
 const gameMatrix= Array(20).fill().map(() => Array(12).fill(0));
 let points=0;
+let highscorePoints=0;
 let ticker=setInterval(callDraw,1000);
 score.innerHTML="Score: "+ points ;
-highscore.innerHTML=" Highscore: "+ points;
-
+highscore.innerHTML=" Highscore: "+ highscorePoints;
+if (localStorage.getItem("highscoreP")) {
+    highscorePoints=Number(localStorage.getItem("highscoreP"));
+    highscore.innerHTML=" Highscore: "+ highscorePoints
+   }
 document.addEventListener("keydown",move);
 
 
@@ -56,7 +60,10 @@ const player= {
 
 function callDraw() {
     gameState();
-       
+       if (localStorage.getItem("highscoreP")) {
+        highscorePoints=Number(localStorage.getItem("highscoreP"));
+        highscore.innerHTML=" Highscore: "+ highscorePoints
+       }
 
     player.position.y+=box;
     draw(player.matrix,player.position);
@@ -239,7 +246,7 @@ function dropPiece() {
 
 function gameState() {
     
-    for (let i=0;i<=2;i++) {
+    for (let i=0;i<=1;i++) {
         gameMatrix[i].forEach((value,x)=> {
             if(value!==0){
                 for (let k=0;k<player.matrix.length;k++) {
@@ -256,6 +263,10 @@ function gameState() {
                             btn.addEventListener("click", ()=> location.reload());
                             document.body.appendChild(btn);
                             document.body.appendChild(txt);
+                            if(points>highscorePoints) {
+                                highscorePoints=points;
+                                localStorage.setItem("highscoreP", highscorePoints);
+                            }
                             return true;     
                         }
                     }

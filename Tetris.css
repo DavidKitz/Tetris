@@ -16,6 +16,7 @@ button{
     height: 5%;
     left: 5%;
     top: 50%;
+    background-color: lavender;
 }
 h1 {
     position: absolute;
