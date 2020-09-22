@@ -1,6 +1,4 @@
-//collision works because as soon as piece goes of gameMatrix field it produces undefined which turns !==0 to true
-//Pieces after tetris do not correctly drop down if beneath them there is open space, causing them to float in the air
-//
+
 const cnv= document.getElementById("Gameboard");
 const ctx= cnv.getContext("2d");
 const box= 25;
@@ -12,12 +10,12 @@ let highscorePoints=0;
 let ticker=setInterval(callDraw,1000);
 score.innerHTML="Score: "+ points ;
 highscore.innerHTML=" Highscore: "+ highscorePoints;
+document.addEventListener("keydown",move);
+
 if (localStorage.getItem("highscoreP")) {
     highscorePoints=Number(localStorage.getItem("highscoreP"));
     highscore.innerHTML=" Highscore: "+ highscorePoints
-   }
-document.addEventListener("keydown",move);
-
+}
 
 
 let tetrisPieces= {
@@ -198,20 +196,13 @@ function drawAfterTetris(...arrayTetris) {
               gameMatrix[tetrisNbrs[i]][x]=0;        
             })
         }
-        //Needs work here, if in the upper 4lines tetris is happening error chances are high
         for (let i=0;i<=tetrisNbrs[tetrisNbrs.length-1];i++) {
             if(gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i]!==undefined) {
                 gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i].forEach((value,x)=> {
                     if(value!==0) {
                         gameMatrix[(tetrisNbrs[tetrisNbrs.length-1])-1-i][x]= gameMatrix[(tetrisNbrs[0])-i][x];
                         gameMatrix[(tetrisNbrs[0])-i][x]=1;
-                        // if (gameMatrix[(tetrisNbrs[0])-i+1]!== undefined && gameMatrix[(tetrisNbrs[0])-i+1][x]===0) {
-                        //     gameMatrix[(tetrisNbrs[0])-i][x]=0;
-                        //     for (let k=tetrisNbrs[tetrisNbrs.length-1];k===0;k--)  {
-                        //         if(gameMatrix[(tetrisNbrs[0])+k]!==undefined && gameMatrix[(tetrisNbrs[0])+k][x]===0)
-                        //             gameMatrix[(tetrisNbrs[0])+k][x]=1;
-                        //             k=0;
-                        //     }
+                        
                     }})
                     }
             }
@@ -252,8 +243,7 @@ function gameState() {
                 for (let k=0;k<player.matrix.length;k++) {
                     for (let x=0;x<player.matrix.length;x++) {
                         if(player.matrix[k][x]!==0 &&
-                        (gameMatrix[k + (player.position.y/box)] && 
-                        gameMatrix[k + (player.position.y/box)][x + (player.position.x/box)]) !==0 ) { 
+                        (gameMatrix[i][x + (player.position.x/box)]!==0)) { 
                             document.removeEventListener("keydown",move);
                             clearInterval(ticker);
                             let btn=document.createElement("button");
@@ -324,9 +314,11 @@ function merge(gameMatrix,player) {
     player.matrix.forEach((row,y) => {
         row.forEach((value,x) => {
             if (value!==0) {
-                
+                if(gameMatrix[y + (player.position.y/box)-1] &&
+                 (gameMatrix[y + (player.position.y/box)-1][x+ player.position.x/box]!==undefined)) 
+                {
                 gameMatrix[(y*box + (player.position.y))/box-1][(x*box+ player.position.x)/box]=value;
-                }
+                }}
                 
             });
     });
