@@ -1,9 +1,9 @@
-# Das klassische Tetris-Spiel 
-geschrieben in vanilla Javascript. 
+# Javascript Tetris-Spiel 
+## Klassisches Tetris geschrieben in vanilla Javascript,HTML und CSS. 
 ## Der link zum Spiel <a href="https://davidkitz.github.io/Tetris/">hier</a>
 # Anleitung
-## Pfeiltaste aufwärts: Rotieren des Tetromino
-## Pfeiltaste links: Positionierung nach links
-## Pfeiltaste rechts: Positionierung nach rechts
-## Pfeiltaste unten: Positionierung nach unten
-## Leertaste: Lässt das Tetromino fallen
+ Pfeiltaste aufwärts: Rotieren des Tetromino <br>
+ Pfeiltaste links: Positionierung nach links <br>
+ Pfeiltaste rechts: Positionierung nach rechts <br>
+ Pfeiltaste unten: Positionierung nach unten <br>
+ Leertaste: Lässt das Tetromino fallen <br>
